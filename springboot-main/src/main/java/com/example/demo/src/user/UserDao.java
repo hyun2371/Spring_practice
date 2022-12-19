@@ -52,11 +52,11 @@ public class UserDao {
     }
 
     public List<GetOrderInfoRes> selectOrderInfo(int userIdx) {
-        String selectOrderInfoQuery = "SELECT o.orderIdx, s.name,m.name,totalPrice \n" +
+        String selectOrderInfoQuery = "SELECT DISTINCT(o.orderIdx), s.name as store,m.name as menu,totalPrice\n" +
                 "                FROM Store as s\n" +
                 "                   join Orders as o on s.storeIdx = o.storeIdx and userIdx = ? \n" +
                 "                   join (SELECT userIdx,Orders.storeIdx,name FROM Orders,Menu WHERE Orders.storeIdx = Menu.storeIdx and userIdx=?) as m on m.storeIdx = s.storeIdx\n" +
-                "                  order by o.orderIdx asc;\n";
+                "                  order by o.orderIdx asc";
         int selectUserOrderPram=userIdx;
         return this.jdbcTemplate.query(selectOrderInfoQuery,
                 (rs,rowNum)-> new GetOrderInfoRes(
@@ -64,7 +64,7 @@ public class UserDao {
                         rs.getString("store"),
                         rs.getString("menu"),
                         rs.getString("totalPrice")
-                ),selectUserOrderPram);
+                ),selectUserOrderPram,selectUserOrderPram);
     }
 
 
